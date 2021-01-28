@@ -1,0 +1,58 @@
+buildscript {
+    ext {
+        javaVersion = JavaVersion.VERSION_1_8
+        springBootVersion = '1.5.9.RELEASE'
+    }
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin"}
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'idea'
+
+group = 'cn.ebing'
+version = '0.0.1-SNAPSHOT'
+description = "discovery"
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    baseName = 'dog'
+    version = 'gradle'
+    manifest {
+        attributes("Main-Class": "cn.ebing.dog.api.DogApiApplication", "Implementation-Title": "Gradle")
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
+    compile("org.springframework.boot:spring-boot-starter-security")
+
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+
+compileJava.dependsOn(processResources)
